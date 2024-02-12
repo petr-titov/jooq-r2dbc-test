@@ -1,0 +1,29 @@
+plugins {
+	id 'java'
+}
+
+sourceCompatibility = '17'
+targetCompatibility = '17'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.jooq:jooq:3.19.3'
+
+	implementation 'io.r2dbc:r2dbc-pool:1.0.1.RELEASE'
+	testImplementation 'io.r2dbc:r2dbc-h2:1.0.0.RELEASE'
+
+	implementation 'io.projectreactor:reactor-core:3.6.2'
+	testImplementation 'io.projectreactor:reactor-test:3.6.2'
+
+	testImplementation 'ch.qos.logback:logback-classic:1.4.14'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
+}
+
+test {
+    useJUnitPlatform()
+}
