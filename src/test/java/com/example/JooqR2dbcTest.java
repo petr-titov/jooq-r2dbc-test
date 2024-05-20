@@ -15,10 +15,6 @@ import reactor.test.StepVerifier;
  * The following tests fail:
  * <li>{@link JooqR2dbcTest#testFlatMapWithError()}
  * <li>{@link JooqR2dbcTest#testMonoZipWithError()}
- * 
- * @see https://github.com/jOOQ/jOOQ/issues/15462
- * @see https://github.com/r2dbc/r2dbc-pool/issues/198
- * @see https://github.com/reactor/reactor-pool/issues/124
  */
 class JooqR2dbcTest extends AbstractR2dbcTest {
 
