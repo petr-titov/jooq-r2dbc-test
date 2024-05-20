@@ -86,11 +86,11 @@ class DbClientR2dbcTest extends AbstractR2dbcTest {
                 .fetch().one()
                 .publishOn(SCHEDULER), CONCURRENCY);
 
-            for (int i = 0; i < ATTEMPT_COUNT; i++) {
-                StepVerifier.create(select)
-                    .expectNextCount(ROW_COUNT)
-                    .verifyComplete();
-            }
+        for (int i = 0; i < ATTEMPT_COUNT; i++) {
+            StepVerifier.create(select)
+                .expectNextCount(ROW_COUNT)
+                .verifyComplete();
+        }
 
         assertEquals(0, getAcquiredConnectionCount());
     }
@@ -112,11 +112,11 @@ class DbClientR2dbcTest extends AbstractR2dbcTest {
                     .publishOn(SCHEDULER);
             }, CONCURRENCY);
 
-            for (int i = 0; i < ATTEMPT_COUNT; i++) {
-                StepVerifier.create(select)
-                    .thenConsumeWhile(it -> true)
-                    .verifyError(BadSqlGrammarException.class);
-            }
+        for (int i = 0; i < ATTEMPT_COUNT; i++) {
+            StepVerifier.create(select)
+                .thenConsumeWhile(it -> true)
+                .verifyError(BadSqlGrammarException.class);
+        }
 
         assertEquals(0, getAcquiredConnectionCount());
     }
@@ -138,11 +138,11 @@ class DbClientR2dbcTest extends AbstractR2dbcTest {
                     .publishOn(SCHEDULER);
             }, CONCURRENCY, CONCURRENCY);
 
-            for (int i = 0; i < ATTEMPT_COUNT; i++) {
-                StepVerifier.create(select)
-                    .expectNextCount(ROW_COUNT - 4)
-                    .verifyErrorMessage(COMPOSITE_EXCEPTION_MESSAGE);
-            }
+        for (int i = 0; i < ATTEMPT_COUNT; i++) {
+            StepVerifier.create(select)
+                .expectNextCount(ROW_COUNT - 4)
+                .verifyErrorMessage(COMPOSITE_EXCEPTION_MESSAGE);
+        }
 
         assertEquals(0, getAcquiredConnectionCount());
     }

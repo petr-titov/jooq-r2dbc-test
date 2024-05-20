@@ -95,11 +95,11 @@ class NativeR2dbcTest extends AbstractR2dbcTest {
                 .next()
                 .publishOn(SCHEDULER), CONCURRENCY);
 
-            for (int i = 0; i < ATTEMPT_COUNT; i++) {
-                StepVerifier.create(select)
-                    .expectNextCount(ROW_COUNT)
-                    .verifyComplete();
-            }
+        for (int i = 0; i < ATTEMPT_COUNT; i++) {
+            StepVerifier.create(select)
+                .expectNextCount(ROW_COUNT)
+                .verifyComplete();
+        }
 
         assertEquals(0, getAcquiredConnectionCount());
     }
@@ -119,11 +119,11 @@ class NativeR2dbcTest extends AbstractR2dbcTest {
                     .publishOn(SCHEDULER);
             }, CONCURRENCY);
 
-            for (int i = 0; i < ATTEMPT_COUNT; i++) {
-                StepVerifier.create(select)
-                    .thenConsumeWhile(it -> true)
-                    .verifyError(R2dbcBadGrammarException.class);
-            }
+        for (int i = 0; i < ATTEMPT_COUNT; i++) {
+            StepVerifier.create(select)
+                .thenConsumeWhile(it -> true)
+                .verifyError(R2dbcBadGrammarException.class);
+        }
 
         assertEquals(0, getAcquiredConnectionCount());
     }
@@ -143,11 +143,11 @@ class NativeR2dbcTest extends AbstractR2dbcTest {
                     .publishOn(SCHEDULER);
             }, CONCURRENCY, CONCURRENCY);
 
-            for (int i = 0; i < ATTEMPT_COUNT; i++) {
-                StepVerifier.create(select)
-                    .expectNextCount(ROW_COUNT - 4)
-                    .verifyErrorMessage(COMPOSITE_EXCEPTION_MESSAGE);
-            }
+        for (int i = 0; i < ATTEMPT_COUNT; i++) {
+            StepVerifier.create(select)
+                .expectNextCount(ROW_COUNT - 4)
+                .verifyErrorMessage(COMPOSITE_EXCEPTION_MESSAGE);
+        }
 
         assertEquals(0, getAcquiredConnectionCount());
     }
@@ -167,6 +167,6 @@ class NativeR2dbcTest extends AbstractR2dbcTest {
         return Flux.usingWhen(connectionFactory.create(),
                 connection -> connection.createStatement(query).bind(0, id).execute(),
                 Connection::close)
-                .flatMap(result -> result.map(rowMapper));
+            .flatMap(result -> result.map(rowMapper));
     }
 }

@@ -10,15 +10,15 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.jooq:jooq:3.19.5'
+    implementation 'org.jooq:jooq:3.19.8'
 
-	implementation 'org.springframework:spring-r2dbc:6.1.4'
+	implementation 'org.springframework:spring-r2dbc:6.1.6'
 
     implementation 'io.r2dbc:r2dbc-pool:1.0.1.RELEASE'
     testImplementation 'io.r2dbc:r2dbc-h2:1.0.0.RELEASE'
 
-    implementation 'io.projectreactor:reactor-core:3.6.3'
-    testImplementation 'io.projectreactor:reactor-test:3.6.3'
+    implementation 'io.projectreactor:reactor-core:3.6.6'
+    testImplementation 'io.projectreactor:reactor-test:3.6.6'
 
     testImplementation 'ch.qos.logback:logback-classic:1.4.14'
 
