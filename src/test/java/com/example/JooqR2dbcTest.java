@@ -1,6 +1,9 @@
 package com.example;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.function.Function;
+
 import org.junit.jupiter.api.Test;
 
 import org.jooq.exception.DataAccessException;
@@ -162,5 +165,28 @@ class JooqR2dbcTest extends AbstractR2dbcTest {
         }
 
         assertEquals(0, getAcquiredConnectionCount());
+    }
+
+    /*
+     * Connection life time
+     */
+
+    @Test
+    void testConnectionLifeTime_open() {
+        var select = Flux.from(jooq.selectFrom("test"))
+            .subscribeOn(SCHEDULER);
+        StepVerifier.create(select)
+            .thenConsumeWhile(it -> getAcquiredConnectionCount() == 1)
+            .verifyComplete();
+    }
+
+    @Test
+    void testConnectionLifeTime_closed() {
+        var select = Flux.from(jooq.selectFrom("test"))
+            .collectList().flatMapIterable(Function.identity())
+            .subscribeOn(SCHEDULER);
+        StepVerifier.create(select)
+            .thenConsumeWhile(it -> getAcquiredConnectionCount() == 0)
+            .verifyComplete();
     }
 }

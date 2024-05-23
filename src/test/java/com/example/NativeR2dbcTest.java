@@ -1,6 +1,7 @@
 package com.example;
 
 import java.util.Map;
+import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -150,6 +151,29 @@ class NativeR2dbcTest extends AbstractR2dbcTest {
         }
 
         assertEquals(0, getAcquiredConnectionCount());
+    }
+
+    /*
+     * Connection life time
+     */
+
+    @Test
+    void testConnectionLifeTime_open() {
+        var select = executeQuery("SELECT * FROM test")
+            .subscribeOn(SCHEDULER);
+        StepVerifier.create(select)
+            .thenConsumeWhile(it -> getAcquiredConnectionCount() == 1)
+            .verifyComplete();
+    }
+
+    @Test
+    void testConnectionLifeTime_closed() {
+        var select = executeQuery("SELECT * FROM test")
+            .collectList().flatMapIterable(Function.identity())
+            .subscribeOn(SCHEDULER);
+        StepVerifier.create(select)
+            .thenConsumeWhile(it -> getAcquiredConnectionCount() == 0)
+            .verifyComplete();
     }
 
     /*

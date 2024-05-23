@@ -3,6 +3,8 @@ package com.example;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.function.Function;
+
 import org.springframework.r2dbc.BadSqlGrammarException;
 import org.springframework.r2dbc.core.DatabaseClient;
 
@@ -145,5 +147,30 @@ class DbClientR2dbcTest extends AbstractR2dbcTest {
         }
 
         assertEquals(0, getAcquiredConnectionCount());
+    }
+
+    /*
+     * Connection life time
+     */
+
+    @Test
+    void testConnectionLifeTime_open() {
+        var select = dbClient.sql("SELECT * FROM test")
+            .fetch().all()
+            .subscribeOn(SCHEDULER);
+        StepVerifier.create(select)
+            .thenConsumeWhile(it -> getAcquiredConnectionCount() == 1)
+            .verifyComplete();
+    }
+
+    @Test
+    void testConnectionLifeTime_closed() {
+        var select = dbClient.sql("SELECT * FROM test")
+            .fetch().all()
+            .collectList().flatMapIterable(Function.identity())
+            .subscribeOn(SCHEDULER);
+        StepVerifier.create(select)
+            .thenConsumeWhile(it -> getAcquiredConnectionCount() == 0)
+            .verifyComplete();
     }
 }
