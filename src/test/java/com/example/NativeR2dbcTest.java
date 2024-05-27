@@ -4,9 +4,8 @@ import java.util.Map;
 import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.springframework.r2dbc.core.ColumnMapRowMapper;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.r2dbc.spi.Connection;
 import io.r2dbc.spi.R2dbcBadGrammarException;

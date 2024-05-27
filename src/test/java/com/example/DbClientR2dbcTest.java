@@ -1,12 +1,11 @@
 package com.example;
 
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.util.function.Function;
 
+import org.junit.jupiter.api.Test;
 import org.springframework.r2dbc.BadSqlGrammarException;
 import org.springframework.r2dbc.core.DatabaseClient;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;

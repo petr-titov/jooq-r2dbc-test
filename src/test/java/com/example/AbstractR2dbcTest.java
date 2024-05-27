@@ -8,10 +8,8 @@ import org.jooq.Field;
 import org.jooq.Table;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-
 import org.springframework.r2dbc.core.DatabaseClient;
 
 import io.r2dbc.pool.ConnectionPool;
@@ -31,6 +29,8 @@ abstract class AbstractR2dbcTest {
     protected static final int CONCURRENCY = 10;
 
     protected static final int ROW_COUNT = 100;
+
+    protected static final int PAGE_SIZE = 10;
 
     protected static final int ATTEMPT_COUNT = 3;
 

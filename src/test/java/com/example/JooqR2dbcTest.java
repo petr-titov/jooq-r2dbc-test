@@ -1,12 +1,14 @@
 package com.example;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
+import java.time.Duration;
+import java.util.Collection;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
-
-import org.junit.jupiter.api.Test;
+import static java.util.function.Predicate.not;
 
 import org.jooq.exception.DataAccessException;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -173,7 +175,7 @@ class JooqR2dbcTest extends AbstractR2dbcTest {
 
     @Test
     void testConnectionLifeTime_open() {
-        var select = Flux.from(jooq.selectFrom("test"))
+        var select = Flux.from(jooq.selectFrom(TABLE))
             .subscribeOn(SCHEDULER);
         StepVerifier.create(select)
             .thenConsumeWhile(it -> getAcquiredConnectionCount() == 1)
@@ -182,11 +184,45 @@ class JooqR2dbcTest extends AbstractR2dbcTest {
 
     @Test
     void testConnectionLifeTime_closed() {
-        var select = Flux.from(jooq.selectFrom("test"))
+        var select = Flux.from(jooq.selectFrom(TABLE))
             .collectList().flatMapIterable(Function.identity())
             .subscribeOn(SCHEDULER);
         StepVerifier.create(select)
             .thenConsumeWhile(it -> getAcquiredConnectionCount() == 0)
             .verifyComplete();
+    }
+
+    /*
+     * Pagination
+     */
+
+    @Test
+    void testPagination() {
+        var cursor = new AtomicInteger();
+
+        var select = Flux.defer(() ->
+                Flux.from(jooq.selectFrom(TABLE)
+                    .where(F_ID.gt(cursor.get()))
+                    .orderBy(F_ID)
+                    .limit(PAGE_SIZE)))
+            .doOnRequest(n -> assertEquals(Long.MAX_VALUE, n))
+            .map(rec -> rec.get(F_ID))
+            .collectList()
+            .doOnRequest(n -> assertEquals(1, n))
+            .repeat()
+            .takeWhile(not(Collection::isEmpty))
+            .doOnNext(list -> cursor.set(list.get(list.size() - 1)))
+            .subscribeOn(SCHEDULER)
+            // concatMap with prefetch = 0
+            .concatMap(list -> Flux.fromIterable(list)
+                .delayElements(Duration.ofMillis(10))
+                .filter(rec -> getAcquiredConnectionCount() == 0));
+
+        for (int i = 0; i < ATTEMPT_COUNT; i++) {
+            cursor.set(0);
+            StepVerifier.create(select)
+                .expectNextCount(ROW_COUNT)
+                .verifyComplete();
+        }
     }
 }
