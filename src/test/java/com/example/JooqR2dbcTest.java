@@ -213,10 +213,17 @@ class JooqR2dbcTest extends AbstractR2dbcTest {
             .takeWhile(not(Collection::isEmpty))
             .doOnNext(list -> cursor.set(list.get(list.size() - 1)))
             .subscribeOn(SCHEDULER)
-            // concatMap with prefetch = 0
+
+//            // lenient variant - next query is allowed before all items have handled (prefectch >= 0)
+//            .concatMapIterable(Function.identity()/* , 1 */)
+//            .delayElements(Duration.ofMillis(10))
+//            .filter(rec -> getAcquiredConnectionCount() == 0);
+
+            // strict variant - all items must to be handled before next query (prefectch == 0,
+            // or prefectch > 0 for less strict variant)
             .concatMap(list -> Flux.fromIterable(list)
                 .delayElements(Duration.ofMillis(10))
-                .filter(rec -> getAcquiredConnectionCount() == 0));
+                .filter(rec -> getAcquiredConnectionCount() == 0)/* , 1 */);
 
         for (int i = 0; i < ATTEMPT_COUNT; i++) {
             cursor.set(0);
