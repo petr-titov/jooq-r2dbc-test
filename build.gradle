@@ -11,7 +11,7 @@ repositories {
 
 dependencies {
     // https://www.jooq.org/notes#3.20.0
-    implementation 'org.jooq:jooq:3.20.1'
+    implementation 'org.jooq:jooq:3.19.13'
 
 	implementation 'org.springframework:spring-r2dbc:6.1.6' // 6.2.3
 
